@@ -6,7 +6,7 @@ from .models import Question
 class QuestionSerializer(ModelSerializer):
     class Meta:
         model = Question
-        fields = ['question_text', 'answer_text', 'asked_on']
+        fields = ['user', 'question_text', 'answer_text', 'asked_on']
 
     def create(self, validated_data):
         qna = Question.objects.create(user=validated_data['user'], question_text=validated_data['question_text'],
