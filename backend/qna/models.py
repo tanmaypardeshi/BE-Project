@@ -9,7 +9,7 @@ class Question(models.Model):
     asked_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['asked_on']
+        ordering = ['-asked_on']
 
     def __str__(self):
         return f"{self.question_text}"

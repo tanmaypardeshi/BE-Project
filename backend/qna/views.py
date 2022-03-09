@@ -42,23 +42,21 @@ class QuestionView(generics.GenericAPIView):
             'user': user.pk,
             'question_text': request.data['question_text'],
             'answer_text': answer,
-            # 'asked_on': datetime.datetime.now()
         }
         qna = self.serializer_class(data=data)
-        qna.is_valid(raise_exception=True)
-        qna.save()
-        response = {
-            'success': True,
-            'message': "Added Question and Answer Successfully",
-            'answer': answer
-        }
-        print(qna)
-        return Response(response, status=status.HTTP_200_OK)
-        # else:
-        #     response = {
-        #         'success': False,
-        #         'message': "Could not add question"
-        #     }
-        #     return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        if qna.is_valid():
+            qna.save()
+            response = {
+                'success': True,
+                'message': "Added Question and Answer Successfully",
+                'answer': answer
+            }
+            return Response(response, status=status.HTTP_200_OK)
+        else:
+            response = {
+                'success': False,
+                'message': "Could not add question"
+            }
+            return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
