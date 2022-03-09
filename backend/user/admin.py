@@ -30,7 +30,7 @@ class UserAdmin(BaseUserAdmin):
     filter_horizontal = ()
 
 
-admin.site.site_header = 'Context-aware Fact-based Question Answering using Knowledge Graphs and NMT'
+admin.site.site_header = 'Knowledge Graph Based Question Answering'
 admin.site.register(User, UserAdmin)
 admin.site.register(OTP)
 admin.site.unregister(Group)
