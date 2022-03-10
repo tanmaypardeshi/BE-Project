@@ -13,7 +13,9 @@ import {
 import { FaUserCheck } from "react-icons/fa";
 import { makeStyles } from "@material-ui/styles";
 import Visualization from './../../svg/visualization.svg'
+// import {ForceGraph3D} from 'react-force-graph';
 import { Link as RRDLink, useNavigate } from "react-router-dom";
+import { useSnackbar } from 'react-simple-snackbar'
 import Axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
@@ -63,8 +65,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Login() {
+  const options = {
+    position: 'bottom-left',
+    style: {
+      fontSize: '15px',
+      textAlign: 'center',
+    }
+  }
+
   const classes = useStyles();
   const history = useNavigate();
+  const [openSnackbar, closeSnackbar] = useSnackbar(options);
 
   const [details, setDetails] = useState({
     email: "",
@@ -79,24 +90,27 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // if (!details.email || !details.password) {
-    //   //enqueueSnackbar("Please fill all fields to login", { variant: "error" });
-    //   return;
-    // }
-    // Axios.post(`${process.env.REACT_APP_HOST}/api/staff/login`, details, {
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // })
-    //   .then((res) => {
-    //     sessionStorage.setItem("usertoken", res.data.data.token);
-    //     sessionStorage.setItem("user", JSON.stringify(res.data.data.user));
-    //     //enqueueSnackbar("Login Successful", { variant: "success" });
-    //     history.push("/home");
-    //   })
-    //   .catch((err) => {
-    //     //enqueueSnackbar("Invalid credentials", {variant: "error",});
-    //   });
+    if (!details.email || !details.password) {
+      openSnackbar("Please fill all fields to login");
+      return;
+    }
+    Axios.post(`${process.env.REACT_APP_HOST}/user/login/`, {
+      email: details.email,
+      password: details.password
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        sessionStorage.setItem("usertoken", res.data.token);
+        // sessionStorage.setItem("user", JSON.stringify(res.data.data.user));
+        openSnackbar("Login Successful");
+        history("/home");
+      })
+      .catch((err) => {
+        openSnackbar("Invalid credentials");
+      });
   };
 
   return (
@@ -111,6 +125,7 @@ export default function Login() {
         className={classes.image}
       >
         {/* <img src={Visualization}/> */}
+        {/* <ForceGraph3D/> */}
       </Grid>
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>

@@ -13,6 +13,7 @@ import {
   ExitToApp,
 } from "@material-ui/icons";
 import { IoPersonSharp } from 'react-icons/io5'
+import { FaQuestion } from 'react-icons/fa'
 import MainRoutes from "./MainRoutes";
 import clsx from "clsx";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -83,90 +84,24 @@ export default function ClippedDrawer() {
   const location = useLocation();
   const history = useNavigate();
 
-  const [open, setOpen] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [dialog, setDialog] = useState(false);
-
-  const [user, setUser] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    is_admin: 1,
-    reg_id: "",
-    division: null,
-    roleName: null,
-    subName: null,
-    year: null,
-  });
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    Axios.post(
-      `${process.env.REACT_APP_HOST}/api/staff/update/${
-        JSON.parse(sessionStorage.getItem("user")).reg_id
-      }`,
-      user,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("usertoken")}`,
-        },
-      }
-    )
-      .then((res) => {
-        setUser(user);
-        let jsonObj = JSON.parse(sessionStorage.getItem("user"));
-        jsonObj.firstName = user.firstName;
-        jsonObj.lastName = user.lastName;
-        jsonObj.email = user.email;
-        sessionStorage.setItem("user", JSON.stringify(user));
-        handleDialog(false);
-        // enqueueSnackbar("Update Successful", { variant: "success" });
-      })
-      .catch((err) => {
-        // enqueueSnackbar("Could not update", { variant: "error" });
-      });
-  };
-
   const handleLogout = () => {
     sessionStorage.removeItem("usertoken");
-    sessionStorage.removeItem("user");
     history("");
-  };
-
-  const handleDialog = () => {
-    setDialog(!dialog);
   };
 
   const handleProfile = () => {
       history("/home/profile")
   }
 
-//   const getDetails = () => {
-//     Axios.get(
-//       `${process.env.REACT_APP_HOST}/api/staff/${
-//         JSON.parse(sessionStorage.getItem("user")).reg_id
-//       }`,
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${sessionStorage.getItem("usertoken")}`,
-//         },
-//       }
-//     ).then((res) => {
-//       setUser(res.data.data[0]);
-//       setIsAdmin(() => (res.data.data[0].is_admin === 0 ? false : true));
-//     });
-//   };
-//   useEffect(() => {
-//     getDetails();
-//   }, []);
+  const handleQuestion = () => {
+    history("/home")
+}
 
   useEffect(() => {
-    // let user = sessionStorage.getItem("user");
-    // if (!user) {
-    //   history.push("/");
-    // }
+    let user = sessionStorage.getItem("usertoken");
+    if (!user) {
+      history("/");
+    }
   });
 
   return (
@@ -178,6 +113,17 @@ export default function ClippedDrawer() {
           <Typography variant="h5" className={classes.title}>
             Knowledge Graph-based Question Answering
           </Typography>
+          <IconButton onClick={handleQuestion} style={{marginRight: "5px"}}>
+            <Tooltip title="Ask Question">
+              <FaQuestion style={{ height: "19px", color: "#ffffff" }} />
+            </Tooltip>
+            {/* <Typography
+              variant="body1"
+              style={{ paddingLeft: "2%", color: "#fff" }}
+            >
+              Logout
+            </Typography> */}
+          </IconButton>
           <IconButton onClick={handleProfile} style={{marginRight: "5px"}}>
             <Tooltip title="Profile">
               <IoPersonSharp style={{ height: "22px", color: "#ffffff" }} />

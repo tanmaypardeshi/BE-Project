@@ -2,22 +2,18 @@ import React, { useState, useEffect } from "react";
 import {
   makeStyles,
   Typography,
-  IconButton,
+  Divider,
   Grid,
-  Button,
-  TextField,
-  Card
+  List,
+  ListItem
 } from "@material-ui/core";
 import clsx from "clsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import Male from './../../svg/male.svg'
+import { useSnackbar } from 'react-simple-snackbar'
 import Axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-        height: "100vh",
-        fontSize: "15px",
-      },
   avatar2: {
     color: "#FFFFFF",
     backgroundColor: "#E50058",
@@ -28,7 +24,8 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     display: "flex",
-    width: '100%'
+    width: '100%',
+    padding: '1%'
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -38,7 +35,9 @@ const useStyles = makeStyles((theme) => ({
     //fontFamily: "'Pacifico', cursive",
     flexGrow: 1,
     display: "none",
-    color: "#E50058",
+    color: "#6C63FF",
+    fontWeight: '500',
+    fontSize: '16px',
     textTransform: 'uppercase',
     [theme.breakpoints.up("sm")]: {
       display: "block",
@@ -49,43 +48,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
     justifyContent: 'center'
   },
-  paper: {
-    padding: theme.spacing(1, 8),
-    margin: '1%',
-    height: "100%",
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F5F5DC",
-    boxShadow: "0 2px 50px rgba(0, 0, 0, 0.4)",
-  },
-  paper2: {
-    padding: theme.spacing(1, 8),
-    margin: '1%',
-    height: "100%",
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F5F5DC",
-    boxShadow: "0 2px 50px rgba(0, 0, 0, 0.4)",
-  },
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
-  },
-  list: {
-    paddingLeft: theme.spacing(1),
-  },
-  backDrop: {
-    backdropFilter: "blur(3px)",
-    backgroundColor: "rgba(69,69,69,0.8)",
-  },
-  listItem: {
-    padding: "0 auto",
   },
   card: {
     margin: '2%',
@@ -100,76 +65,153 @@ profileDetails: {
     marginTop: '38px'
 },
 avatar: {
-    padding: '1% 0',
     margin:'1% 3%',
-    width: '250px',
+    paddingTop: '1%',
+    width: '200px',
     float: 'left'
 },
 name: {
     fontSize: '250%',
     letterSpacing: '1px',
     wordSpacing: '7px',
-    margin: '4px 0'
+    margin: '2% 0'
 },
 email: {
     fontSize: '100%',
     letterSpacing: '2px',
-    marginBottom: '10px'
+    marginBottom: '5px'
 },
-dept: {
-    color: '#696969',
-    fontSize: '98%'
+paper: {
+  padding: theme.spacing(2, 2),
+  margin: '1%',
+  width: "100%",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "#F5F5DC",
+  boxShadow: "0 2px 50px rgba(0, 0, 0, 0.4)"
+},
+answerpaper: {
+  padding: theme.spacing(1, 8),
+  margin: '1%',
+  width: "100%",
+  backgroundColor: "#F5F5DC",
+  boxShadow: "0 2px 50px rgba(0, 0, 0, 0.4)",
+},
+answer: {
+  float: "left",
+  display: "flex",
+  margin: '2px',
+  width: '100%'
+},
+text: {
+  padding: '0 2%',
+  fontSize: '16px',
+  float: "left"
 }
 }));
 
 export default function Profile() {
-  const classes = useStyles();
+  const options = {
+    position: 'bottom-left',
+    style: {
+      fontSize: '15px',
+      textAlign: 'center',
+    }
+  }
 
+  const classes = useStyles();
   const location = useLocation();
   const history = useNavigate();
+  const [openSnackbar, closeSnackbar] = useSnackbar(options);
 
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
-    email: "",
-    is_admin: 1,
-    reg_id: "",
-    division: null,
-    roleName: null,
-    subName: null,
-    year: null,
+    email: ""
   });
-
-  const [profile, setProfile]= useState(null)
+  const [qna, setQna] = useState(null)
  
-  const handleChange = (e) => {
+  useEffect(() => {
+    Axios.get(`${process.env.REACT_APP_HOST}/user/profile/`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("usertoken")}`
+      },
+    })
+      .then((res) => {
+       setUser({ 
+         firstName: res.data.data.first_name,
+         lastName: res.data.data.last_name,
+         email: res.data.data.email
+        })
+      })
+      .catch((err) => {
+        openSnackbar("Failed to load profile");
+      });
+  }, []);
 
-  }
+  useEffect(() => {
+    Axios.get(`${process.env.REACT_APP_HOST}/qna/askquestion/`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("usertoken")}`
+      },
+    })
+      .then((res) => {
+       setQna(res.data.history)
+      })
+      .catch((err) => {
+        openSnackbar("Failed to load user history");
+      })
+  }, [])
 
-  const handleSubmit = (e) => {
-
-  }
+  useEffect(() => console.log(qna), [qna])
 
   return (
     <div className={classes.root}>
         <Grid container>
         <Grid className={classes.paper}>
             <img src={Male} alt='Avatar' className={classes.avatar}/>
-            <div>
+            <div className={classes.profileDetails}>
                 {
-                    profile ?
+                    user ?
                         <div className={classes.table}>
-                            <p className={classes.name}>{profile.first_name} {profile.last_name}</p>
-                            <p className={classes.email}>{profile.email}</p>
-                            <p className={classes.dept}>Employee</p>
+                            <p className={classes.name}>{user.firstName} {user.lastName}</p>
+                            <p className={classes.email}>{user.email}</p>
                         </div> :
                         null
                 }
             </div>
         </Grid>
-        {/* <Grid className={classes.paper2}>
-            <Typography variant="h5" className={classes.title}>Answer</Typography>
-        </Grid> */}
+        {
+            qna && qna.length > 0 ?
+            <div style={{width: '100%'}}>
+                <Typography variant="h5" style={{ margin : "1% 2%"}}>User History:</Typography>
+                <List >
+                  {qna.map((item, i) => (
+                    <div>
+                      <ListItem disablePadding>
+                        <Grid className={classes.answerpaper}>
+                        <div className={classes.answer}>
+                            <p className={classes.title}><b>Question:</b></p>
+                            <br/>
+                            <p className={classes.text}>{item.question_text}</p>
+                        </div>
+                        <div className={classes.answer}>
+                          <p className={classes.title}><b>Answer:</b></p>
+                          <br/>
+                          <p className={classes.text}>{item.answer_text}</p>
+                        </div>
+                        </Grid>
+                      </ListItem>
+                    <Divider/>
+                    </div>
+                  ))}
+                </List>
+            </div> :
+            null
+          }
         </Grid>
     </div>
   );

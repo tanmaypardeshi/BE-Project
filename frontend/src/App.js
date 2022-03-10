@@ -6,6 +6,7 @@ import {
   createTheme,
   CssBaseline,
 } from "@material-ui/core";
+import SnackbarProvider from 'react-simple-snackbar'
 
 const lightPallete = {
   palette: {
@@ -26,7 +27,9 @@ function App() {
     <BrowserRouter>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
-        <KGQARoutes />
+        <SnackbarProvider>
+          <KGQARoutes />
+        </SnackbarProvider>
       </MuiThemeProvider>
     </BrowserRouter>
   );

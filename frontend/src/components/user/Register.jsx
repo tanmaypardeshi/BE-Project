@@ -13,6 +13,7 @@ import {
 import { FaUserPlus } from "react-icons/fa";
 import { makeStyles } from "@material-ui/styles";
 import { Link as RRDLink, useNavigate } from "react-router-dom";
+import { useSnackbar } from 'react-simple-snackbar'
 import Axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
@@ -65,8 +66,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Register() {
+  const options = {
+    position: 'bottom-left',
+    style: {
+      fontSize: '15px',
+      textAlign: 'center',
+    }
+  }
+
   const classes = useStyles();
   const history = useNavigate();
+  const [openSnackbar, closeSnackbar] = useSnackbar(options);
 
   const [details, setDetails] = useState({
     firstName: "",
@@ -94,35 +104,36 @@ export default function Register() {
       !details.password ||
       !details.confpass
     ) {
-      // enqueueSnackbar("All fields must be filled!", { variant: "error" });
+      openSnackbar("Please provide all details");
       return;
     }
     if (details.password.length < 8) {
-      // enqueueSnackbar("Password Length should be 8 characters", {variant: "error",});
+       openSnackbar("Password Length should be 8 characters");
       return;
     }
     if (details.password !== details.confpass) {
-      // enqueueSnackbar("Password mismatch!", { variant: "error" });
+      openSnackbar("Password mismatch!");
       return;
     }
-    if (details.mobile[0] === "") {
-      // enqueueSnackbar("1 Phone numer is mandatory!", { variant: "error" });
-      return;
-    }
-    Axios.post(`${process.env.REACT_APP_HOST}/api/staff/register`, details, {
+    Axios.post(`${process.env.REACT_APP_HOST}/user/register/`, {
+      "email": details.email, 
+      "first_name": details.firstName,
+      "last_name": details.lastName,
+      "password": details.password
+    }, {
       headers: {
         "Content-Type": "application/json",
       },
     })
       .then((res) => {
-        sessionStorage.setItem("usertoken", res.data.data.token);
-        sessionStorage.setItem("user", JSON.stringify(res.data.data.user));
-        // enqueueSnackbar("Login Successful", { variant: "success" });
-        history.push("/home");
+        sessionStorage.setItem("usertoken", res.data.token);
+        // sessionStorage.setItem("user", JSON.stringify(res.data.data.user));
+        openSnackbar("Login Successful");
+        history("/home");
       })
       .catch((err) => {
         console.log(err)
-        // enqueueSnackbar("Already Registered!", { variant: "error" });
+        openSnackbar("Already Registered!");
       });
   };
 
