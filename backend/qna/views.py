@@ -8,10 +8,14 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from .serializers import QuestionSerializer
 from user.models import User
 from .models import Question
+from e2c.answerquestion import getAnswer
 
 
 def get_answer(question):
-    return f"Question is {question}. Answer is FO"
+    answers = getAnswer(question)
+    print(answers)
+    return answers[0]
+    #return f"Question is {question}. Answer is FO"
 
 
 class QuestionView(generics.GenericAPIView):

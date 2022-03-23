@@ -1,2 +1,5 @@
 venv
-__pycache__gaa
+__pycache__
+.DS_Store
+model_checkpoint.zip
+backend/output
