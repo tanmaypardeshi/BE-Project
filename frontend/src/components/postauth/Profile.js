@@ -83,7 +83,7 @@ email: {
 },
 paper: {
   padding: theme.spacing(2, 2),
-  margin: '1%',
+  margin: '1% ',
   width: "100%",
   flexDirection: "column",
   alignItems: "center",
@@ -93,7 +93,7 @@ paper: {
 },
 answerpaper: {
   padding: theme.spacing(1, 8),
-  margin: '1%',
+  margin: '1% 1% 0 1%',
   width: "100%",
   backgroundColor: "#F5F5DC",
   boxShadow: "0 2px 50px rgba(0, 0, 0, 0.4)",
@@ -105,9 +105,18 @@ answer: {
   width: '100%'
 },
 text: {
-  padding: '0 2%',
+
   fontSize: '16px',
-  float: "left"
+},
+readmorelink: {
+  color: "blueviolet",
+  textDecoration: "underline",
+  letterSpacing: "1px",
+  cursor: "pointer",
+},
+extracontent: {
+  color: "cornflowerblue",
+  fontWeight: "500"
 }
 }));
 
@@ -159,6 +168,7 @@ export default function Profile() {
       },
     })
       .then((res) => {
+        console.log(res.data)
        setQna(res.data.history)
       })
       .catch((err) => {
@@ -194,18 +204,20 @@ export default function Profile() {
                       <ListItem disablePadding>
                         <Grid className={classes.answerpaper}>
                         <div className={classes.answer}>
-                            <p className={classes.title}><b>Question:</b></p>
-                            <br/>
-                            <p className={classes.text}>{item.question_text}</p>
+                            <p className={classes.text}><b>Q. {item.question}</b></p>
                         </div>
-                        <div className={classes.answer}>
-                          <p className={classes.title}><b>Answer:</b></p>
+                        <div >
                           <br/>
-                          <p className={classes.text}>{item.answer_text}</p>
+                          {
+                            item.answer.map((obj, idx) => 
+                              <div className={classes.text}>
+                                <p>{idx+1}. {obj}</p>
+                              </div>
+                            )
+                          }
                         </div>
                         </Grid>
                       </ListItem>
-                    <Divider/>
                     </div>
                   ))}
                 </List>

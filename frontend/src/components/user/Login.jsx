@@ -12,8 +12,6 @@ import {
 } from "@material-ui/core";
 import { FaUserCheck } from "react-icons/fa";
 import { makeStyles } from "@material-ui/styles";
-import Visualization from './../../svg/visualization.svg'
-// import {ForceGraph3D} from 'react-force-graph';
 import { Link as RRDLink, useNavigate } from "react-router-dom";
 import { useSnackbar } from 'react-simple-snackbar'
 import Axios from "axios";
@@ -124,8 +122,11 @@ export default function Login() {
         alignContents="center"
         className={classes.image}
       >
-        {/* <img src={Visualization}/> */}
-        {/* <ForceGraph3D/> */}
+        <Hidden smDown>
+          <Typography component="h1" variant="h1" className={classes.target}>
+            KGQA
+          </Typography>
+        </Hidden>      
       </Grid>
       <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
         <div className={classes.paper}>

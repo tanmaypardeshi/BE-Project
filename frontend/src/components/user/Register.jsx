@@ -150,7 +150,7 @@ export default function Register() {
       >
         <Hidden smDown>
           <Typography component="h1" variant="h1" className={classes.target}>
-            Target
+            KGQA
           </Typography>
         </Hidden>
       </Grid>

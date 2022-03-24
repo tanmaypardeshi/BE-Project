@@ -1,19 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   makeStyles,
-  Typography,
-  IconButton,
   Grid,
   Button,
   TextField
 } from "@material-ui/core";
-import clsx from "clsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSnackbar } from 'react-simple-snackbar'
+import Typed from 'react-typed';
 import Axios from "axios";
-import { SignalCellularNull } from "@material-ui/icons";
+import Loader from "react-js-loader";
 
-const drawerWidth = 400;
 
 const useStyles = makeStyles((theme) => ({
   avatar2: {
@@ -31,7 +28,6 @@ const useStyles = makeStyles((theme) => ({
   },
   logo: { marginRight: theme.spacing(2) },
   title: {
-    //fontFamily: "'Pacifico', cursive",
     flexGrow: 1,
     display: "none",
     color: "#6C63FF",
@@ -83,15 +79,15 @@ const useStyles = makeStyles((theme) => ({
     marginTop: '1%'
   },
   answer: {
-    float: "left",
-    display: "flex",
     margin: '1%',
     width: '100%'
   },
   text: {
-    padding: '0 2%',
-    fontSize: '16px',
-    float: "left"
+    fontSize: '15px'
+  },
+  blinker: {
+    marginTop: '2%',
+    fontSize: '1.5rem'
   }
 }));
 
@@ -106,12 +102,22 @@ export default function Question() {
 
   const classes = useStyles();
 
-  const location = useLocation();
-  const history = useNavigate();
+  const stringArray = [
+    "The information covered by Google's Knowledge Graph grew quickly after launch, tripling its size within seven months.",
+    "Neo4j is the world's most popular graph database management system.",
+    "Google reported that it held 70 billion facts and answered \"roughly one-third\" of the 100 billion monthly searches they handled.",
+    "Diffbot is the world's largest knowledge graph that allows you to access a trillion connected facts across the web.",
+    "Just a few moments more! We are crawling through the graph to get you your answer!"
+
+  ];
+  const typeSpeed = 45;
+  const backSpeed = 10;
+
   const [openSnackbar, closeSnackbar] = useSnackbar(options);
 
-  const [question, setQuestion] = useState(null)
-  const [answer, setAnswer] = useState(null)
+  const [question, setQuestion] = useState(null);
+  const [answer, setAnswer] = useState(null);
+  const [loader, setLoader] = useState(false);
 
   const handleChange = (e) => {
     setAnswer(null)
@@ -124,6 +130,7 @@ export default function Question() {
       openSnackbar("Please enter a question")
       return
     }
+    setLoader(true)
     Axios.post(`${process.env.REACT_APP_HOST}/qna/askquestion/`, {
       question_text: question
     }, {
@@ -134,9 +141,11 @@ export default function Question() {
     })
       .then((res) => {
         setAnswer(res.data.answer)
+        setLoader(false)
       })
       .catch((err) => {
         openSnackbar("Failed to retrieve answer");
+        setLoader(false)
       });
   }
 
@@ -174,21 +183,34 @@ export default function Question() {
             answer ?
             <Grid  className={classes.answerpaper}>
                 <div className={classes.answer}>
-                    <p className={classes.title}><b>Question:</b></p>
-                    <br/>
-                    <p className={classes.text}>{question}</p>
-                </div>
-                <div className={classes.answer}>
-                  <p className={classes.title}><b>Answer:</b></p>
+                  <p className={classes.title}><b>Answers:</b></p>
                   <br/>
                   {
-                    answer.map((obj) => 
-                      <p className={classes.text}>{obj}</p>
+                    answer.map((obj, idx) => 
+                      <div className={classes.text}>
+                        <p>{idx+1}. {obj}</p>
+                      </div>
                     )
                   }
                 </div>
             </Grid> :
-            null
+            loader ?
+            <>            
+              <Grid container spacing={2} justify="center" style={{marginTop: '2%'}}>
+                <Loader type="spinner-circle" bgColor={"#6C63FF"} color={'#6C63FF'} size={100}/>
+              </Grid>            
+              <Grid container spacing={1} justify="center">
+                <Typed
+                    strings={stringArray}
+                    typeSpeed={typeSpeed}
+                    backSpeed={backSpeed}
+                    className={classes.blinker}
+                    loop
+                />
+              </Grid>
+            </>
+
+            : null
           }
         </Grid>
     </div>
