@@ -7,15 +7,13 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from .serializers import QuestionSerializer
 from user.models import User
-from .models import Question
-from e2c.answerquestion import getAnswer
+from .models import Question, Answer
+# from e2c.answerquestion import getAnswer
 
 
 def get_answer(question):
-    answers = getAnswer(question)
-    print(answers)
-    return answers[0]
-    #return f"Question is {question}. Answer is FO"
+    # answers = getAnswer(question)
+    return ['A', 'B', 'C']
 
 
 class QuestionView(generics.GenericAPIView):
@@ -34,32 +32,23 @@ class QuestionView(generics.GenericAPIView):
 
     def post(self, request):
         try:
-            answer = get_answer(question=request.data['question_text'])
+            answers = get_answer(question=request.data['question_text'])
+            user = User.objects.get(email=request.user)
+            question = Question(user=user, question_text=request.data['question_text'])
+            question.save()
+            for answer in answers:
+                ans = Answer(question=question, answer_text=answer)
+                ans.save()
+            response = {
+                'success': True,
+                'message': "Added Question and Answer Successfully",
+                'answer': answers
+            }
+            return Response(response, status=status.HTTP_200_OK)
         except Exception as e:
             response = {
                 'success': False,
                 'message': e.__str__()
-            }
-            return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        user = User.objects.get(email=request.user)
-        data = {
-            'user': user.pk,
-            'question_text': request.data['question_text'],
-            'answer_text': answer,
-        }
-        qna = self.serializer_class(data=data)
-        if qna.is_valid():
-            qna.save()
-            response = {
-                'success': True,
-                'message': "Added Question and Answer Successfully",
-                'answer': answer
-            }
-            return Response(response, status=status.HTTP_200_OK)
-        else:
-            response = {
-                'success': False,
-                'message': "Could not add question"
             }
             return Response(response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

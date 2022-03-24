@@ -181,7 +181,11 @@ export default function Question() {
                 <div className={classes.answer}>
                   <p className={classes.title}><b>Answer:</b></p>
                   <br/>
-                  <p className={classes.text}>{answer}</p>
+                  {
+                    answer.map((obj) => 
+                      <p className={classes.text}>{obj}</p>
+                    )
+                  }
                 </div>
             </Grid> :
             null
